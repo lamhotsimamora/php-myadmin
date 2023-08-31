@@ -73,7 +73,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td v-for="data in datas">{{ data.field }}</td>
+                            <td v-for="data in datas">{{ data }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -84,6 +84,7 @@
     <script>
         const $database = '<?= esc($database) ?>';
         const $server = "<?= base_url() ?>";
+
         new Vue({
             el: '#app',
             data: {
@@ -91,22 +92,25 @@
                 database: $database
             },
             methods: {
-                loadField: function(data) {
+                loadField: function(tablename) {
                     $app2.loading=true;
+                    $app2.loadData(tablename,this.database);
                     jnet({
                         url: $server + 'get-column-name',
                         method: 'post',
                         data: {
                             database: this.database,
-                            tablename: data
+                            tablename: tablename
                         }
                     }).request($response => {
                         let $obj = JSON.parse($response);
+                      
                         if ($obj) {
                             $app2.datatables = $obj;
                             $app2.loading=false;
-                            $app2.loadData(data);
+                           
                         }
+                        
                     })
                 },
                 loadTableName: function() {
@@ -136,12 +140,13 @@
                 datas:null
             },
             methods: {
-                loadData: function(tablename){
+                loadData: function(tablename,database){
                     jnet({
                         url: $server + 'get-data',
                         method: 'post',
                         data: {
-                            tablename:tablename
+                            tablename:tablename,
+                            database : database
                         }
                     }).request($response => {
                         let $obj = JSON.parse($response);

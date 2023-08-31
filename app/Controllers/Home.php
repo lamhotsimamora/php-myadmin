@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use \App\Models\DataModel;
+
 class Home extends BaseController
 {
     public function index():string 
@@ -47,10 +49,14 @@ class Home extends BaseController
         $request = \Config\Services::request();
 
         $tablename = $request->getVar('tablename');
-        $db = db_connect();
-        $result = $db->query('select * from '.$tablename.'');
+        $database = $request->getVar('database');
+        
+        $data = new DataModel();
+        $data->setTable($tablename);
+        
+        $data = $data->findAll();
  
-        return json_encode($result->getResultArray());
+        return json_encode($data);
     }
 
     public function getTableByDatabase($database): string
